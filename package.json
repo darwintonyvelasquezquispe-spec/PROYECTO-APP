@@ -1,0 +1,25 @@
+{
+  "name": "darkman-app",
+  "version": "1.2.0",
+  "description": "Gestor ejecutivo de suscripciones, control de vencimientos y recordatorios directos por WhatsApp con integración a Google Sheets.",
+  "main": "server.js",
+  "scripts": {
+    "build": "echo 'Build OK'",
+    "start": "node server.js",
+    "test": "node verify.js",
+    "sync": "node gsheets-sync.js sync",
+    "import": "node gsheets-sync.js import"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "keywords": [
+    "darkman",
+    "subscriptions",
+    "whatsapp",
+    "google-sheets",
+    "pwa"
+  ],
+  "author": "DarkMan",
+  "license": "ISC"
+}

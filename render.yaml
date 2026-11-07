@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: darkman-app
+    env: node
+    plan: free
+    buildCommand: "echo 'DarkMan listo'"
+    startCommand: "node server.js"
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: APP_TIMEZONE
+        value: America/Lima
+      - key: REQUIRE_AUTH
+        value: "true"
+      - key: ADMIN_PASSWORD
+        generateValue: true
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: GOOGLE_SHEET_ID
+        value: 1WS8iXX9TVqmrbMMF9QaQ16JzHEk_gyzdNbSm3p9QtzM

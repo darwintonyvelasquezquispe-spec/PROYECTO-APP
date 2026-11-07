@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html class="dark" lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+  <meta content="DarkMan - Gestor de Suscripciones y Clientes" name="description"/>
+  <title>DarkMan — Gestor de Suscripciones & Clientes</title>
+
+  <!-- Google Fonts: Inter & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet"/>
+  
+  <!-- Material Symbols Outlined -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-container-lowest": "#0b0e15",
+            "surface-container-low": "#191c23",
+            "surface-container": "#1d2027",
+            "surface-container-high": "#272a31",
+            "surface-container-highest": "#32353c",
+            "surface": "#10131a",
+            "surface-dim": "#10131a",
+            "surface-bright": "#363941",
+            "on-surface": "#e0e2ec",
+            "on-surface-variant": "#c2c6d6",
+            "inverse-surface": "#e0e2ec",
+            "inverse-on-surface": "#2d3038",
+            "outline": "#8c909f",
+            "outline-variant": "#424754",
+            "primary": "#adc6ff",
+            "primary-container": "#4d8eff",
+            "on-primary": "#002e6a",
+            "on-primary-container": "#00285d",
+            "secondary": "#a4c9ff",
+            "secondary-container": "#0267b8",
+            "on-secondary": "#00315d",
+            "on-secondary-container": "#d6e5ff",
+            "tertiary": "#4edea3",
+            "tertiary-container": "#00a572",
+            "on-tertiary": "#003824",
+            "on-tertiary-container": "#00311f",
+            "error": "#ffb4ab",
+            "error-container": "#93000a",
+            "on-error": "#690005",
+            "on-error-container": "#ffdad6"
+          },
+          fontFamily: {
+            sans: ["Inter", "sans-serif"],
+            headline: ["Plus Jakarta Sans", "sans-serif"]
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- PWA Manifest & Meta Tags -->
+  <link rel="manifest" href="/manifest.json"/>
+  <meta name="theme-color" content="#10131a"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="DarkMan"/>
+  <link rel="apple-touch-icon" href="/assets/icon-192.png"/>
+
+  <!-- Custom styles -->
+  <link rel="stylesheet" href="/css/custom.css"/>
+  <link rel="icon" type="image/svg+xml" href="/assets/logo.svg"/>
+</head>
+<body class="bg-surface text-on-surface font-sans flex flex-col min-h-screen antialiased selection:bg-primary-container selection:text-on-primary-container">
+
+  <!-- ============================================================ -->
+  <!-- Banner de Estado de Conexión & Actualización PWA -->
+  <!-- ============================================================ -->
+  <div id="offline-banner" class="hidden bg-amber-500/20 border-b border-amber-500/40 text-amber-300 py-1.5 px-4 text-center text-xs font-semibold flex items-center justify-center gap-2 z-50">
+    <span class="material-symbols-outlined text-[16px]">wifi_off</span>
+    <span>Sin conexión a internet — Modo consulta. Las modificaciones se bloquearán hasta recuperar conexión.</span>
+  </div>
+
+  <div id="update-banner" class="hidden bg-primary-container text-on-primary-container py-2 px-4 text-center text-xs font-headline font-bold flex items-center justify-center gap-3 z-50 shadow-lg">
+    <span class="material-symbols-outlined text-[18px]">update</span>
+    <span>Nueva versión disponible de DarkMan</span>
+    <button onclick="app.updateAppNow()" class="px-2.5 py-1 rounded bg-white text-on-primary-container text-xs font-bold hover:bg-slate-100 transition-colors">
+      Actualizar ahora
+    </button>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- Header / Barra Superior de Navegación -->
+  <!-- ============================================================ -->
+  <header class="sticky top-0 z-40 w-full bg-surface/90 backdrop-blur-xl border-b border-outline-variant/30 shadow-[0_4px_20px_rgba(0,0,0,0.5)]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="h-16 flex items-center justify-between gap-3">
+        
+        <!-- Logo y Título -->
+        <div class="flex items-center gap-3 cursor-pointer" onclick="app.navigate('dashboard')">
+          <div class="w-10 h-10 rounded-xl bg-surface-container-high border border-outline-variant flex items-center justify-center shadow-inner shrink-0">
+            <img src="/assets/logo.svg" alt="DarkMan Logo" class="w-7 h-7 object-contain"/>
+          </div>
+          <div class="flex flex-col">
+            <div class="flex items-center gap-1.5">
+              <span class="font-headline text-lg sm:text-xl font-bold tracking-tight text-white">Dark<span class="text-primary">Man</span></span>
+              <span class="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-primary-container/20 text-primary border border-primary/30 hidden sm:inline-block">Obsidian</span>
+            </div>
+            <span class="text-xs text-on-surface-variant hidden sm:inline">Gestor de Suscripciones & Clientes</span>
+          </div>
+        </div>
+
+        <!-- Navegación Central -->
+        <nav class="hidden md:flex items-center gap-1 bg-surface-container-low p-1 rounded-xl border border-outline-variant/40">
+          <button id="nav-btn-dashboard" onclick="app.navigate('dashboard')" class="px-3.5 py-1.5 rounded-lg text-sm font-semibold text-white bg-surface-container flex items-center gap-2 transition-all">
+            <span class="material-symbols-outlined text-[18px] text-primary">dashboard</span>
+            Inicio
+          </button>
+          <button id="nav-btn-list" onclick="app.navigate('list')" class="px-3.5 py-1.5 rounded-lg text-sm font-semibold text-on-surface-variant hover:text-white hover:bg-surface-container/50 flex items-center gap-2 transition-all">
+            <span class="material-symbols-outlined text-[18px]">table_rows</span>
+            Listado Resumido
+          </button>
+          <button id="nav-btn-clients" onclick="app.navigate('clients')" class="px-3.5 py-1.5 rounded-lg text-sm font-semibold text-on-surface-variant hover:text-white hover:bg-surface-container/50 flex items-center gap-2 transition-all">
+            <span class="material-symbols-outlined text-[18px]">group</span>
+            Clientes
+          </button>
+        </nav>
+
+        <!-- Acciones Rápidas & Reloj Lima -->
+        <div class="flex items-center gap-2 sm:gap-3">
+          
+          <!-- Indicador de Hora Oficial Lima (America/Lima) -->
+          <div class="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-container-low border border-outline-variant/30 text-xs">
+            <span class="material-symbols-outlined text-[16px] text-tertiary">schedule</span>
+            <div class="flex flex-col">
+              <span class="text-[10px] text-on-surface-variant uppercase font-semibold">Lima (UTC-5)</span>
+              <span id="lima-clock" class="font-headline font-semibold text-white tabular-nums">--:--:--</span>
+            </div>
+          </div>
+
+          <!-- Botón Instalar PWA -->
+          <button id="btn-install-pwa" onclick="app.promptInstallPWA()" class="hidden px-2.5 py-1.5 rounded-lg bg-blue-600/20 hover:bg-blue-600/40 text-xs font-semibold text-blue-300 border border-blue-500/30 flex items-center gap-1.5 transition-colors" title="Instalar DarkMan en celular o escritorio">
+            <span class="material-symbols-outlined text-[16px] text-blue-400">install_mobile</span>
+            <span class="hidden sm:inline">Instalar App</span>
+          </button>
+
+          <!-- Botón Integración Google Sheets -->
+          <button onclick="app.openGoogleSheetsModal()" class="px-2.5 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-bright text-xs font-semibold text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5 transition-colors" title="Google Sheets Conectado">
+            <span class="material-symbols-outlined text-[16px] text-emerald-400">table_chart</span>
+            <span class="hidden sm:inline">Google Sheets</span>
+          </button>
+
+          <!-- Selector de Modo de Datos (Demo / Producción) -->
+          <div class="relative">
+            <button id="btn-data-menu" onclick="app.toggleDataMenu()" class="px-2.5 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-bright text-xs font-semibold text-on-surface flex items-center gap-1.5 border border-outline-variant/40 transition-colors" title="Gestionar datos y modo demostración">
+              <span class="material-symbols-outlined text-[16px] text-primary">database</span>
+              <span id="data-mode-badge" class="hidden sm:inline">Modo Demo</span>
+              <span class="material-symbols-outlined text-[14px]">expand_more</span>
+            </button>
+
+            <!-- Menú desplegable de datos -->
+            <div id="data-menu-dropdown" class="hidden absolute right-0 mt-2 w-56 rounded-xl bg-surface-container-high border border-outline-variant p-2 shadow-2xl z-50 flex-col gap-1">
+              <span class="text-[11px] uppercase font-bold text-on-surface-variant px-2 py-1 block">Gestión de Datos</span>
+              <button onclick="app.loadDemoData()" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-white hover:bg-surface-container flex items-center gap-2 transition-colors">
+                <span class="material-symbols-outlined text-[16px] text-tertiary">replay</span>
+                Cargar datos de prueba
+              </button>
+              <button onclick="app.promptClearData()" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-error hover:bg-error-container/20 flex items-center gap-2 transition-colors">
+                <span class="material-symbols-outlined text-[16px]">delete_sweep</span>
+                Limpiar base de datos
+              </button>
+            </div>
+          </div>
+
+          <!-- Botón Bloquear / Iniciar Sesión -->
+          <button id="btn-auth-lock" onclick="app.toggleAuth()" class="p-2 rounded-lg bg-surface-container-high hover:bg-surface-bright text-xs font-semibold text-on-surface flex items-center justify-center border border-outline-variant/40 transition-colors" title="Bloquear o gestionar acceso">
+            <span class="material-symbols-outlined text-[18px] text-primary" id="btn-auth-lock-icon">lock</span>
+          </button>
+
+          <!-- Botón Principal: Registrar Cliente -->
+          <button onclick="app.openNewClientModal()" class="px-3 sm:px-4 py-2 rounded-xl bg-primary-container hover:bg-blue-600 text-on-primary-container font-headline font-bold text-xs sm:text-sm flex items-center gap-1.5 shadow-md shadow-blue-500/20 active:scale-95 transition-all">
+            <span class="material-symbols-outlined text-[18px]">person_add</span>
+            <span class="hidden xs:inline">Nuevo Cliente</span>
+          </button>
+
+        </div>
+      </div>
+
+      <!-- Menú Móvil Inferior -->
+      <div class="md:hidden flex items-center justify-around py-2 border-t border-outline-variant/20">
+        <button onclick="app.navigate('dashboard')" id="mob-nav-dashboard" class="flex flex-col items-center gap-0.5 text-xs text-primary font-semibold">
+          <span class="material-symbols-outlined text-[20px]">dashboard</span>
+          Inicio
+        </button>
+        <button onclick="app.navigate('list')" id="mob-nav-list" class="flex flex-col items-center gap-0.5 text-xs text-on-surface-variant hover:text-white">
+          <span class="material-symbols-outlined text-[20px]">table_rows</span>
+          Servicios
+        </button>
+        <button onclick="app.navigate('clients')" id="mob-nav-clients" class="flex flex-col items-center gap-0.5 text-xs text-on-surface-variant hover:text-white">
+          <span class="material-symbols-outlined text-[20px]">group</span>
+          Clientes
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ============================================================ -->
+  <!-- Contenido Principal Dinámico -->
+  <!-- ============================================================ -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- ---------------------------------------------------------- -->
+    <!-- PANTALLA 1: DASHBOARD / INICIO -->
+    <!-- ---------------------------------------------------------- -->
+    <div id="view-dashboard" class="space-y-6">
+      
+      <!-- Fila Superior: Saludo y Fecha Lima -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-surface-container rounded-2xl p-4 sm:p-5 border border-outline-variant/30">
+        <div>
+          <h1 class="font-headline text-xl sm:text-2xl font-bold text-white tracking-tight flex items-center gap-2">
+            Panel de Control
+            <span class="text-xs font-normal text-on-surface-variant bg-surface-container-high px-2.5 py-0.5 rounded-full border border-outline-variant/30">America/Lima</span>
+          </h1>
+          <p class="text-xs sm:text-sm text-on-surface-variant mt-0.5">
+            Supervisa los vencimientos mensuales, registra renovaciones y envía avisos por WhatsApp.
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="text-right sm:text-left">
+            <span class="text-xs text-on-surface-variant block">Fecha operativa</span>
+            <span id="dashboard-date-display" class="font-headline font-bold text-sm text-primary">--/--/----</span>
+          </div>
+          <button onclick="app.refreshAll(true)" class="p-2 rounded-lg bg-surface-container-high text-on-surface-variant hover:text-white hover:bg-surface-bright transition-colors" title="Actualizar datos y cálculos">
+            <span class="material-symbols-outlined text-[18px]">refresh</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Tarjetas de Métricas / Contadores Reales -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        
+        <!-- Total Clientes -->
+        <div onclick="app.navigate('clients')" class="bg-surface-container rounded-2xl p-4 border border-outline-variant/40 hover:border-primary/50 transition-all cursor-pointer shadow-lg group">
+          <div class="flex items-center justify-between text-on-surface-variant mb-2">
+            <span class="text-xs font-semibold uppercase tracking-wider">Total Clientes</span>
+            <div class="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center group-hover:scale-110 transition-transform">
+              <span class="material-symbols-outlined text-[18px]">group</span>
+            </div>
+          </div>
+          <div class="flex items-baseline gap-2">
+            <span id="kpi-total-clients" class="font-headline text-2xl sm:text-3xl font-extrabold text-white tabular-nums">0</span>
+            <span class="text-xs text-on-surface-variant">registrados</span>
+          </div>
+          <span class="text-[11px] text-primary/80 mt-1 block">Ver directorio &rarr;</span>
+        </div>
+
+        <!-- Servicios Vigentes -->
+        <div onclick="app.filterByStatusAndGo('VIGENTE')" class="bg-surface-container rounded-2xl p-4 border border-outline-variant/40 hover:border-tertiary/50 transition-all cursor-pointer shadow-lg group">
+          <div class="flex items-center justify-between text-on-surface-variant mb-2">
+            <span class="text-xs font-semibold uppercase tracking-wider text-tertiary">Vigentes</span>
+            <div class="w-8 h-8 rounded-lg bg-tertiary/10 text-tertiary flex items-center justify-center group-hover:scale-110 transition-transform">
+              <span class="material-symbols-outlined text-[18px]">verified</span>
+            </div>
+          </div>
+          <div class="flex items-baseline gap-2">
+            <span id="kpi-active-services" class="font-headline text-2xl sm:text-3xl font-extrabold text-tertiary tabular-nums">0</span>
+            <span class="text-xs text-on-surface-variant">&gt; 3 días</span>
+          </div>
+          <span class="text-[11px] text-tertiary/80 mt-1 block">Al día con sus pagos</span>
+        </div>
+
+        <!-- Servicios Por Vencer -->
+        <div onclick="app.filterByStatusAndGo('POR_VENCER')" class="bg-surface-container rounded-2xl p-4 border border-outline-variant/40 hover:border-amber-400/50 transition-all cursor-pointer shadow-lg group">
+          <div class="flex items-center justify-between text-on-surface-variant mb-2">
+            <span class="text-xs font-semibold uppercase tracking-wider text-amber-400">Por Vencer</span>
+            <div class="w-8 h-8 rounded-lg bg-amber-400/10 text-amber-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <span class="material-symbols-outlined text-[18px]">alarm</span>
+            </div>
+          </div>
+          <div class="flex items-baseline gap-2">
+            <span id="kpi-imminent-services" class="font-headline text-2xl sm:text-3xl font-extrabold text-amber-400 tabular-nums">0</span>
+            <span class="text-xs text-on-surface-variant">0 a 3 días</span>
+          </div>
+          <span class="text-[11px] text-amber-400/80 mt-1 block">Requieren atención</span>
+        </div>
+
+        <!-- Servicios Vencidos -->
+        <div onclick="app.filterByStatusAndGo('VENCIDO')" class="bg-surface-container rounded-2xl p-4 border border-outline-variant/40 hover:border-error/50 transition-all cursor-pointer shadow-lg group">
+          <div class="flex items-center justify-between text-on-surface-variant mb-2">
+            <span class="text-xs font-semibold uppercase tracking-wider text-error">Vencidos</span>
+            <div class="w-8 h-8 rounded-lg bg-error/10 text-error flex items-center justify-center group-hover:scale-110 transition-transform">
+              <span class="material-symbols-outlined text-[18px]">error</span>
+            </div>
+          </div>
+          <div class="flex items-baseline gap-2">
+            <span id="kpi-overdue-services" class="font-headline text-2xl sm:text-3xl font-extrabold text-error tabular-nums">0</span>
+            <span class="text-xs text-on-surface-variant">urgente</span>
+          </div>
+          <span class="text-[11px] text-error/80 mt-1 block">Cobranza inmediata</span>
+        </div>
+
+      </div>
+
+      <!-- Alerta Operativa Resumida -->
+      <div id="urgent-alert-banner" class="hidden rounded-2xl p-4 bg-gradient-to-r from-error/15 via-surface-container to-amber-500/10 border border-error/30 flex items-center justify-between gap-3 shadow-lg">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-error/20 text-error flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[22px]">notification_important</span>
+          </div>
+          <div>
+            <h4 class="font-headline font-bold text-sm text-white" id="urgent-alert-title">Atención requerida</h4>
+            <p class="text-xs text-on-surface-variant" id="urgent-alert-desc">Hay servicios pendientes de renovación o vencidos.</p>
+          </div>
+        </div>
+        <button onclick="app.navigate('list')" class="px-3 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-bright text-xs font-semibold text-white border border-outline-variant shrink-0">
+          Revisar lista
+        </button>
+      </div>
+
+      <!-- Sección de Listado de Servicios Priorizados por Vencimiento -->
+      <div class="bg-surface-container rounded-2xl p-4 sm:p-6 border border-outline-variant/30 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h2 class="font-headline text-lg sm:text-xl font-bold text-white flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary text-[22px]">sort</span>
+              Servicios Ordenados por Vencimiento
+            </h2>
+            <p class="text-xs text-on-surface-variant">Orden automático: primero vencidos con mayor atraso, luego los de hoy y próximos a vencer.</p>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button onclick="app.navigate('list')" class="px-3 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-bright text-xs font-semibold text-on-surface flex items-center gap-1 transition-colors">
+              <span class="material-symbols-outlined text-[16px]">visibility</span>
+              Ver en tabla compacta
+            </button>
+          </div>
+        </div>
+
+        <!-- Contenedor del Feed de Tarjetas -->
+        <div id="dashboard-feed-container" class="space-y-3">
+          <!-- Renderizado dinámico desde app.js -->
+          <div class="text-center py-12 text-on-surface-variant">
+            <span class="material-symbols-outlined text-4xl animate-spin text-primary">progress_activity</span>
+            <p class="text-sm mt-2">Cargando servicios ordenados...</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ---------------------------------------------------------- -->
+    <!-- PANTALLA 2: LISTADO RESUMIDO (TABLA COMPACTA Y TARJETAS) -->
+    <!-- ---------------------------------------------------------- -->
+    <div id="view-list" class="hidden space-y-5">
+      
+      <!-- Encabezado y Barra de Filtros -->
+      <div class="bg-surface-container rounded-2xl p-4 sm:p-5 border border-outline-variant/30 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h1 class="font-headline text-xl font-bold text-white flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary text-[24px]">table_rows</span>
+              Listado Resumido de Servicios
+            </h1>
+            <p class="text-xs text-on-surface-variant">Tabla compacta con cálculo de días restantes o atraso en tiempo real.</p>
+          </div>
+          <span id="list-counter-label" class="text-xs font-medium text-primary px-3 py-1 rounded-full bg-primary/10 border border-primary/20 self-start sm:self-auto">
+            0 servicios encontrados
+          </span>
+        </div>
+
+        <!-- Filtros Rápidos -->
+        <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 pt-2">
+          
+          <!-- Búsqueda por cliente o celular -->
+          <div class="sm:col-span-5 relative">
+            <span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant text-[20px]">search</span>
+            <input type="text" id="search-input" oninput="app.onFilterChange()" placeholder="Buscar por cliente o celular..." class="w-full bg-surface-container-low text-white text-xs sm:text-sm pl-10 pr-8 py-2.5 rounded-xl border border-outline-variant/50 focus:border-primary placeholder:text-on-surface-variant/60"/>
+            <button id="search-clear-btn" onclick="app.clearSearch()" class="hidden absolute right-2.5 top-2.5 text-on-surface-variant hover:text-white">
+              <span class="material-symbols-outlined text-[18px]">close</span>
+            </button>
+          </div>
+
+          <!-- Filtro por Estado -->
+          <div class="sm:col-span-3">
+            <select id="filter-status" onchange="app.onFilterChange()" class="w-full bg-surface-container-low text-white text-xs sm:text-sm px-3 py-2.5 rounded-xl border border-outline-variant/50 focus:border-primary">
+              <option value="TODOS">Todos los estados</option>
+              <option value="VENCIDO">Vencidos (Rojo)</option>
+              <option value="POR_VENCER">Por vencer (Ámbar)</option>
+              <option value="VIGENTE">Vigentes (Verde)</option>
+            </select>
+          </div>
+
+          <!-- Filtro por Servicio -->
+          <div class="sm:col-span-3">
+            <select id="filter-service" onchange="app.onFilterChange()" class="w-full bg-surface-container-low text-white text-xs sm:text-sm px-3 py-2.5 rounded-xl border border-outline-variant/50 focus:border-primary">
+              <option value="TODOS">Todos los servicios</option>
+            </select>
+          </div>
+
+          <!-- Botón Limpiar Filtros -->
+          <div class="sm:col-span-1">
+            <button onclick="app.resetFilters()" class="w-full h-full py-2.5 px-2 rounded-xl bg-surface-container-high hover:bg-surface-bright text-on-surface-variant hover:text-white flex items-center justify-center border border-outline-variant/40 transition-colors" title="Limpiar todos los filtros">
+              <span class="material-symbols-outlined text-[20px]">filter_alt_off</span>
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Tabla para Desktop / Tablets -->
+      <div class="hidden md:block bg-surface-container rounded-2xl border border-outline-variant/30 overflow-hidden shadow-xl">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse dense-table">
+            <thead>
+              <tr class="border-b border-outline-variant/30 bg-surface-container-low/70 text-[11px] font-bold text-on-surface-variant">
+                <th class="py-3.5 px-4">Cliente</th>
+                <th class="py-3.5 px-4">Celular</th>
+                <th class="py-3.5 px-4">Servicio</th>
+                <th class="py-3.5 px-4">Inicio</th>
+                <th class="py-3.5 px-4">Vencimiento</th>
+                <th class="py-3.5 px-4">Tiempo Restante</th>
+                <th class="py-3.5 px-4 text-right">Monto</th>
+                <th class="py-3.5 px-4 text-center">Estado</th>
+                <th class="py-3.5 px-4 text-center">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="table-services-body" class="divide-y divide-outline-variant/20 text-xs sm:text-sm">
+              <!-- Renderizado desde app.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tarjetas para Celulares / Pantallas Pequeñas -->
+      <div id="mobile-cards-container" class="md:hidden space-y-3">
+        <!-- Renderizado desde app.js -->
+      </div>
+
+    </div>
+
+    <!-- ---------------------------------------------------------- -->
+    <!-- PANTALLA 3: DETALLE DEL CLIENTE (BASADO EN GOOGLE STITCH) -->
+    <!-- ---------------------------------------------------------- -->
+    <div id="view-client-detail" class="hidden space-y-6">
+      
+      <!-- Barra Superior de Navegación del Detalle -->
+      <div class="flex items-center justify-between gap-3 bg-surface-container rounded-2xl p-4 border border-outline-variant/30">
+        <div class="flex items-center gap-3">
+          <button onclick="app.goBackFromDetail()" class="w-10 h-10 rounded-xl bg-surface-container-low hover:bg-surface-bright text-on-surface flex items-center justify-center transition-colors border border-outline-variant/40" title="Volver">
+            <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+          </button>
+          <div>
+            <span class="text-[10px] font-bold uppercase tracking-wider text-primary block">DarkMan • Suscripciones</span>
+            <h1 class="font-headline text-lg sm:text-xl font-bold text-white truncate" id="detail-header-name">Detalle del Cliente</h1>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button onclick="app.openEditClientModal()" class="px-3 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-bright text-xs font-semibold text-white flex items-center gap-1.5 border border-outline-variant transition-colors">
+            <span class="material-symbols-outlined text-[16px]">edit</span>
+            <span class="hidden sm:inline">Editar</span>
+          </button>
+          <button onclick="app.confirmDeleteCurrentClient()" class="px-3 py-1.5 rounded-lg bg-error-container/30 hover:bg-error-container/60 text-xs font-semibold text-error flex items-center gap-1.5 border border-error/30 transition-colors">
+            <span class="material-symbols-outlined text-[16px]">delete</span>
+            <span class="hidden sm:inline">Eliminar</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Ficha Principal del Cliente (Stitch layout) -->
+      <div class="bg-surface-container rounded-2xl p-5 sm:p-6 border border-outline-variant/30 space-y-5 shadow-lg">
+        
+        <!-- Identificación y Avatar -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div class="flex items-center gap-4">
+            <div class="relative shrink-0">
+              <div id="detail-avatar-box" class="w-14 h-14 rounded-2xl bg-surface-container-high border-2 border-primary/40 text-primary flex items-center justify-center font-headline font-bold text-xl shadow-md">
+                --
+              </div>
+              <span id="detail-status-dot" class="absolute -bottom-1 -right-1 w-4 h-4 bg-tertiary rounded-full ring-2 ring-surface-container"></span>
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h2 id="detail-client-name" class="font-headline text-xl sm:text-2xl font-bold text-white">Cargando...</h2>
+                <span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+              </div>
+              <p class="text-xs text-on-surface-variant flex items-center gap-1.5 mt-0.5">
+                <span class="material-symbols-outlined text-[14px]">badge</span>
+                <span id="detail-client-id">ID: CL-0000</span>
+                <span>• Lima, PE</span>
+              </p>
+            </div>
+          </div>
+
+          <!-- Contacto Directo: Celular y WhatsApp Rápido -->
+          <div class="flex flex-wrap sm:flex-nowrap items-center gap-2 bg-surface-container-lowest p-2 rounded-xl border border-outline-variant/30">
+            <div class="flex items-center gap-2 px-3 py-2 bg-surface-container-low rounded-lg">
+              <span class="material-symbols-outlined text-on-surface-variant text-[18px]">smartphone</span>
+              <span id="detail-client-phone" class="font-headline text-xs sm:text-sm font-semibold text-white">+51 --- --- ---</span>
+            </div>
+            <a id="detail-call-btn" href="#" class="p-2 rounded-lg bg-surface-container hover:bg-surface-bright text-primary flex items-center justify-center transition-colors" title="Llamar directamente">
+              <span class="material-symbols-outlined text-[18px]">call</span>
+            </a>
+            <button id="detail-wa-quick-btn" onclick="app.openWhatsAppReminderForClient()" class="px-3 py-2 rounded-lg bg-tertiary-container text-on-tertiary font-headline text-xs font-bold flex items-center gap-1.5 hover:opacity-90 active:scale-95 transition-all">
+              <span class="material-symbols-outlined text-[18px]">chat</span>
+              WhatsApp Rápido
+            </button>
+          </div>
+        </div>
+
+        <!-- Observaciones / Notas del Cliente -->
+        <div id="detail-notes-card" class="bg-surface-container-low p-3.5 rounded-xl border border-outline-variant/20 flex items-start gap-3">
+          <span class="material-symbols-outlined text-secondary text-[20px] shrink-0 mt-0.5">sticky_note_2</span>
+          <div>
+            <span class="text-[10px] font-bold uppercase tracking-wider text-secondary">Nota de Servicio & Cliente</span>
+            <p id="detail-client-notes" class="text-xs sm:text-sm text-on-surface mt-0.5">Sin notas registradas.</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Servicios Contratados por este Cliente -->
+      <div class="space-y-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary text-[22px]">subscriptions</span>
+            <h3 class="font-headline text-lg font-bold text-white">Servicios Contratados</h3>
+          </div>
+          <button onclick="app.openAddServiceModal()" class="px-3 py-1.5 rounded-xl bg-primary-container hover:bg-blue-600 text-on-primary-container text-xs font-headline font-bold flex items-center gap-1.5 transition-all">
+            <span class="material-symbols-outlined text-[18px]">add_circle</span>
+            Agregar Servicio
+          </button>
+        </div>
+
+        <!-- Lista de servicios del cliente -->
+        <div id="detail-services-list" class="space-y-4">
+          <!-- Renderizado dinámico desde app.js -->
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ---------------------------------------------------------- -->
+    <!-- PANTALLA 4: DIRECTORIO DE CLIENTES -->
+    <!-- ---------------------------------------------------------- -->
+    <div id="view-clients" class="hidden space-y-5">
+      <div class="bg-surface-container rounded-2xl p-4 sm:p-5 border border-outline-variant/30 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h1 class="font-headline text-xl font-bold text-white flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary text-[24px]">group</span>
+              Directorio de Clientes
+            </h1>
+            <p class="text-xs text-on-surface-variant">Consulta, gestiona y da seguimiento individual a cada cliente.</p>
+          </div>
+          <button onclick="app.openNewClientModal()" class="px-4 py-2 rounded-xl bg-primary-container hover:bg-blue-600 text-on-primary-container text-xs font-headline font-bold flex items-center gap-1.5 transition-all self-start sm:self-auto">
+            <span class="material-symbols-outlined text-[18px]">person_add</span>
+            Nuevo Cliente
+          </button>
+        </div>
+
+        <!-- Búsqueda en directorio -->
+        <div class="relative">
+          <span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant text-[20px]">search</span>
+          <input type="text" id="clients-search-input" oninput="app.onClientsSearch()" placeholder="Buscar cliente por nombre o número celular..." class="w-full bg-surface-container-low text-white text-xs sm:text-sm pl-10 pr-4 py-2.5 rounded-xl border border-outline-variant/50 focus:border-primary placeholder:text-on-surface-variant/60"/>
+        </div>
+      </div>
+
+      <!-- Tarjetas de Clientes -->
+      <div id="clients-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Renderizado dinámico desde app.js -->
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ============================================================ -->
+  <!-- MODAL: REGISTRAR / EDITAR CLIENTE -->
+  <!-- ============================================================ -->
+  <div id="modal-client" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 modal-backdrop overflow-y-auto">
+    <div class="w-full max-w-lg bg-surface-container-high rounded-2xl p-5 sm:p-6 border border-outline-variant shadow-2xl space-y-4 my-8">
+      
+      <div class="flex items-center justify-between pb-2 border-b border-outline-variant/30">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-primary-container text-on-primary-container flex items-center justify-center">
+            <span class="material-symbols-outlined text-[20px]" id="modal-client-icon">person_add</span>
+          </div>
+          <div>
+            <h3 class="font-headline font-bold text-white text-base sm:text-lg" id="modal-client-title">Registrar Nuevo Cliente</h3>
+            <p class="text-xs text-on-surface-variant">Complete los datos obligatorios marcados con *</p>
+          </div>
+        </div>
+        <button onclick="app.closeModal('modal-client')" class="w-8 h-8 rounded-lg bg-surface-container hover:bg-surface-bright text-on-surface flex items-center justify-center">
+          <span class="material-symbols-outlined text-[18px]">close</span>
+        </button>
+      </div>
+
+      <form id="form-client" onsubmit="event.preventDefault(); app.submitClientForm();" class="space-y-4">
+        <input type="hidden" id="client-edit-id" value=""/>
+
+        <!-- Nombre Completo -->
+        <div>
+          <label class="block text-xs font-semibold text-on-surface-variant mb-1">Nombre Completo *</label>
+          <input type="text" id="client-name" required placeholder="Ej. Carlos Mendoza Valdivia" class="w-full bg-surface-container text-white px-3.5 py-2.5 rounded-xl border border-outline-variant text-sm focus:border-primary"/>
+        </div>
+
+        <!-- Celular y Código de País -->
+        <div class="grid grid-cols-3 gap-2">
+          <div class="col-span-1">
+            <label class="block text-xs font-semibold text-on-surface-variant mb-1">País *</label>
+            <select id="client-country-code" class="w-full bg-surface-container text-white px-2.5 py-2.5 rounded-xl border border-outline-variant text-sm focus:border-primary">
+              <option value="+51" selected>+51 (Perú)</option>
+              <option value="+54">+54 (Argentina)</option>
+              <option value="+56">+56 (Chile)</option>
+              <option value="+57">+57 (Colombia)</option>
+              <option value="+52">+52 (México)</option>
+              <option value="+1">+1 (EE.UU.)</option>
+              <option value="+34">+34 (España)</option>
+            </select>
+          </div>
+          <div class="col-span-2">
+            <label class="block text-xs font-semibold text-on-surface-variant mb-1">Número de Celular *</label>
+            <input type="tel" id="client-phone" required oninput="app.checkDuplicatePhone()" placeholder="Ej. 987654321" class="w-full bg-surface-container text-white px-3.5 py-2.5 rounded-xl border border-outline-variant text-sm focus:border-primary"/>
+          </div>
+        </div>
+
+        <!-- Advertencia de Teléfono Duplicado -->
+        <div id="client-phone-warning" class="hidden p-2.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 text-xs flex items-center gap-2">
+          <span class="material-symbols-outlined text-[18px] shrink-0">warning</span>
+          <span id="client-phone-warning-text">Atención: este celular ya está registrado.</span>
+        </div>
+
+        <!-- Observaciones del Cliente -->
+        <div>
+          <label class="block text-xs font-semibold text-on-surface-variant mb-1">Observaciones / Notas (Opcional)</label>
+          <textarea id="client-notes" rows="2" placeholder="Preferencias, medio de pago habitual, recordatorios..." class="w-full bg-surface-container text-white p-3 rounded-xl border border-outline-variant text-xs sm:text-sm focus:border-primary resize-none"></textarea>
+        </div>
+
+        <!-- Sección de Servicio Inicial (Sólo para Nuevo Cliente) -->
+        <div id="initial-service-section" class="border-t border-outline-variant/30 pt-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[16px]">tv</span>
+              Servicio Inicial a Contratar
+            </span>
+            <span class="text-[11px] text-on-surface-variant">Calculado a 1 mes calendario</span>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-on-surface-variant mb-1">Nombre del Servicio *</label>
+            <input type="text" id="service-name" placeholder="Ej. Plan Premium IPTV 4K, Streaming..." class="w-full bg-surface-container text-white px-3.5 py-2 rounded-xl border border-outline-variant text-sm focus:border-primary"/>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block text-xs font-semibold text-on-surface-variant mb-1">Fecha de Inicio *</label>
+              <input type="date" id="service-start-date" onchange="app.onInitialStartDateChange()" class="w-full bg-surface-container text-white px-3 py-2 rounded-xl border border-outline-variant text-xs sm:text-sm focus:border-primary"/>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-on-surface-variant mb-1">Fecha Vencimiento *</label>
+              <input type="date" id="service-expiry-date" class="w-full bg-surface-container text-white px-3 py-2 rounded-xl border border-outline-variant text-xs sm:text-sm focus:border-primary"/>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block text-xs font-semibold text-on-surface-variant mb-1">Monto Pagado (S/.) *</label>
+              <div class="relative">
+                <span class="absolute left-3 top-2 text-xs font-bold text-primary">S/</span>
+                <input type="number" step="0.50" min="0" id="service-amount" value="45.00" class="w-full bg-surface-container text-white pl-8 pr-3 py-2 rounded-xl border border-outline-variant text-sm font-headline font-bold focus:border-primary"/>
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-on-surface-variant mb-1">Método de Pago</label>
+              <select id="service-payment-method" class="w-full bg-surface-container text-white px-3 py-2 rounded-xl border border-outline-variant text-xs sm:text-sm focus:border-primary">
+                <option value="Yape" selected>Yape</option>
+                <option value="Plin">Plin</option>
+                <option value="Transferencia BCP">Transferencia BCP</option>
+                <option value="Efectivo">Efectivo</option>
+                <option value="Otro">Otro</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="flex items-center gap-2 pt-3 border-t border-outline-variant/30">
+          <button type="button" onclick="app.closeModal('modal-client')" class="w-1/3 py-2.5 px-3 rounded-xl bg-surface-container text-on-surface-variant font-headline font-semibold text-xs hover:bg-surface-bright transition-colors">
+            Cancelar
+          </button>
+          <button type="submit" id="btn-save-client" class="w-2/3 py-2.5 px-3 rounded-xl bg-primary text-on-primary font-headline font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/20 hover:brightness-110 active:scale-95 transition-all">
+            <span class="material-symbols-outlined text-[18px]">check_circle</span>
+            Guardar Cliente
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- MODAL: AGREGAR SERVICIO A CLIENTE EXISTENTE -->
+  <!-- ============================================================ -->
+  <div id="modal-add-service" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-4 modal-backdrop overflow-y-auto">
+    <div class="w-full max-w-md bg-surface-container-high rounded-2xl p-5 sm:p-6 border border-outline-variant shadow-2xl space-y-4 my-8">
+      
+      <div class="flex items-center justify-between pb-2 border-b border-outline-variant/30">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-primary-container text-on-primary-container flex items-center justify-center">
+            <span class="material-symbols-outlined text-[20px]">add_task</span>
+          </div>
+          <div>
+            <h3 class="font-headline font-bold text-white text-base">Agregar Servicio Adicional</h3>
+            <p class="text-xs text-on-surface-variant" id="modal-add-service-client-name">Cliente</p>
+          </div>
+        </div>
+        <button onclick="app.closeModal('modal-add-service')" class="w-8 h-8 rounded-lg bg-surface-container hover:bg-surface-bright text-on-surface flex items-center justify-center">
+          <span class="material-symbols-outlined text-[18px]">close</span>
+        </button>
+      </div>
+
+      <form onsubmit="event.preventDefault(); app.submitAddServiceForm();" class="space-y-3.5">
+        <input type="hidden" id="add-service-client-id" value=""/>
+
+        <div>
+          <label class="block text-xs font-semibold text-on-surface-variant mb-1">Nombre del Servicio *</label>
+          <input type="text" id="add-service-name" required placeholder="Ej. Netflix 4K, IPTV, Fibra..." class="w-full bg-surface-container text-white px-3.5 py-2.5 rounded-xl border border-outline-variant text-sm focus:border-primary"/>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-xs font-semibold text-on-surface-variant mb-1">Fecha de Inicio *</label>
+            <input type="date" id="add-service-start-date" required onchange="app.onAddServiceStartDateChange()" class="w-full bg-surface-container text-white px-3 py-2 rounded-xl border border-outline-variant text-xs sm:text-sm focus:border-primary"/>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-on-surface-variant mb-1">Fecha Vencimiento *</label>
+            <input type="date" id="add-service-expiry-date" required class="w-full bg-surface-container text-white px-3 py-2 rounded-xl border border-outline-variant text-xs sm:text-sm focus:border-primary"/>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-xs font-semibold text-on-surface-variant mb-1">Monto Pagado (S/.) *</label>
+            <div class="relative">
+              <span class="absolute left-3 top-2 text-xs font-bold text-primary">S/</span>
+              <input type="number" step="0.50" min="0" id="add-service-amount" value="45.00" class="w-full bg-surface-container text-white pl-8 pr-3 py-2 rounded-xl border border-outline-variant text-sm font-headline font-bold focus:border-primary"/>
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-on-surface-variant mb-1">Método de Pago</label>
+            <select id="add-service-payment-method" class="w-full bg-surface-container text-white px-3 py-2 rounded-xl border border-outline-variant text-xs sm:text-sm focus:border-primary">
+              <option value="Yape" selected>Yape</option>
+              <option value="Plin">Plin</option>
+              <option value="Transferencia BCP">Transferencia BCP</option>
+              <option value="Efectivo">Efectivo</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-on-surface-variant mb-1">Notas del servicio (Opcional)</label>
+          <input type="text" id="add-service-notes" placeholder="Dispositivo, credenciales o detalles..." class="w-full bg-surface-container text-white px-3.5 py-2 rounded-xl border border-outline-variant text-xs sm:text-sm focus:border-primary"/>
+        </div>
+
+        <div class="flex items-center gap-2 pt-2 border-t border-outline-variant/30">
+          <button type="button" onclick="app.closeModal('modal-add-service')" class="w-1/3 py-2.5 px-3 rounded-xl bg-surface-container text-on-surface-variant font-headline font-semibold text-xs hover:bg-surface-bright transition-colors">
+            Cancelar
+          </button>
+          <button type="submit" id="btn-save-service" class="w-2/3 py-2.5 px-3 rounded-xl bg-primary text-on-primary font-headline font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/20 hover:brightness-110 active:scale-95 transition-all">
+            <span class="material-symbols-outlined text-[18px]">check_circle</span>
+            Guardar Servicio
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- MODAL: RENOVAR MENSUALIDAD (DISEÑO FIDEDIGNO DE STITCH) -->
+  <!-- ============================================================ -->
+  <div id="modal-renewal" class="fixed inset-0 z-50 hidden items-end sm:items-center justify-center p-0 sm:p-4 modal-backdrop">
+    <div class="w-full sm:max-w-md bg-surface-container-high rounded-t-2xl sm:rounded-2xl p-5 sm:p-6 shadow-2xl border border-outline-variant flex flex-col space-y-4 max-h-[90vh] overflow-y-auto">
+      
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-primary-container text-on-primary-container flex items-center justify-center">
+            <span class="material-symbols-outlined text-[20px]">event_repeat</span>
+          </div>
+          <div>
+            <h3 class="font-headline font-bold text-base sm:text-lg text-white">Registrar Renovación</h3>
+            <p class="text-xs text-on-surface-variant" id="renewal-client-name">Cliente: --</p>
+          </div>
+        </div>
+        <button onclick="app.closeModal('modal-renewal')" class="w-8 h-8 rounded-lg bg-surface-container text-on-surface-variant hover:text-white flex items-center justify-center" type="button">
+          <span class="material-symbols-outlined text-[18px]">close</span>
+        </button>
+      </div>
+
+      <!-- Información del Período -->
+      <div class="bg-surface-container rounded-xl p-3.5 space-y-2.5 border border-outline-variant/30">
+        <div class="flex items-center justify-between text-xs">
+          <span class="text-on-surface-variant">Servicio a renovar:</span>
+          <span class="font-headline font-bold text-white text-right truncate max-w-[200px]" id="renewal-service-name">--</span>
+        </div>
+        <div class="flex items-center justify-between text-xs">
+          <span class="text-on-surface-variant">Período actual / anterior:</span>
+          <span class="text-error font-medium text-right tabular-nums" id="renewal-prev-period">--</span>
+        </div>
+        <div class="h-[1px] bg-outline-variant/30"></div>
+        <div class="flex items-center justify-between">
+          <div>
+            <span class="text-[10px] text-tertiary font-bold uppercase tracking-wider block">Nuevo Período (+1 mes calendario)</span>
+            <span class="font-headline font-bold text-xs sm:text-sm text-white tabular-nums" id="renewal-new-period-preview">-- al --</span>
+          </div>
+          <span class="material-symbols-outlined text-tertiary text-[22px]">calendar_month</span>
+        </div>
+      </div>
+
+      <!-- Formulario de Renovación -->
+      <form onsubmit="event.preventDefault(); app.submitRenewal();" class="space-y-3.5">
+        <input type="hidden" id="renewal-service-id" value=""/>
+
+        <!-- Fechas Editables -->
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-xs font-semibold text-on-surface-variant mb-1">Nueva Fecha Inicio</label>
+            <input type="date" id="renewal-start-date" required onchange="app.onRenewalStartDateChange()" class="w-full bg-surface-container text-white px-3 py-2 rounded-xl border border-outline-variant text-xs sm:text-sm focus:border-primary"/>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-on-surface-variant mb-1">Nueva Fecha Vence</label>
+            <input type="date" id="renewal-expiry-date" required onchange="app.onRenewalDatesChange()" class="w-full bg-surface-container text-white px-3 py-2 rounded-xl border border-outline-variant text-xs sm:text-sm focus:border-primary"/>
+          </div>
+        </div>
+
+        <!-- Monto -->
+        <div>
+          <label class="block text-xs font-semibold text-on-surface-variant mb-1">Monto Renovado (Soles) *</label>
+          <div class="relative flex items-center">
+            <span class="absolute left-3 font-headline text-base text-primary font-bold">S/</span>
+            <input type="number" step="0.50" min="0" required id="renewal-amount" class="w-full bg-surface-container text-white pl-10 pr-4 py-2.5 rounded-xl border border-outline-variant font-headline text-base font-bold focus:border-primary"/>
+          </div>
+        </div>
+
+        <!-- Método de Pago (Estilo Stitch) -->
+        <div>
+          <label class="block text-xs font-semibold text-on-surface-variant mb-1.5">Método de Pago</label>
+          <div class="grid grid-cols-2 gap-2">
+            <label class="flex items-center gap-2 p-2.5 rounded-xl bg-surface-container cursor-pointer hover:bg-surface-bright transition-colors border border-outline-variant/30 has-[:checked]:bg-primary-container/20 has-[:checked]:border-primary">
+              <input type="radio" name="renewal_payment_method" value="Yape" checked class="accent-primary"/>
+              <span class="text-xs font-semibold text-white">Yape</span>
+            </label>
+            <label class="flex items-center gap-2 p-2.5 rounded-xl bg-surface-container cursor-pointer hover:bg-surface-bright transition-colors border border-outline-variant/30 has-[:checked]:bg-primary-container/20 has-[:checked]:border-primary">
+              <input type="radio" name="renewal_payment_method" value="Plin" class="accent-primary"/>
+              <span class="text-xs font-semibold text-white">Plin</span>
+            </label>
+            <label class="flex items-center gap-2 p-2.5 rounded-xl bg-surface-container cursor-pointer hover:bg-surface-bright transition-colors border border-outline-variant/30 has-[:checked]:bg-primary-container/20 has-[:checked]:border-primary">
+              <input type="radio" name="renewal_payment_method" value="BCP" class="accent-primary"/>
+              <span class="text-xs font-semibold text-white">Transferencia BCP</span>
+            </label>
+            <label class="flex items-center gap-2 p-2.5 rounded-xl bg-surface-container cursor-pointer hover:bg-surface-bright transition-colors border border-outline-variant/30 has-[:checked]:bg-primary-container/20 has-[:checked]:border-primary">
+              <input type="radio" name="renewal_payment_method" value="Efectivo" class="accent-primary"/>
+              <span class="text-xs font-semibold text-white">Efectivo</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Observaciones de la Renovación -->
+        <div>
+          <label class="block text-xs font-semibold text-on-surface-variant mb-1">Nota o Referencia (Opcional)</label>
+          <input type="text" id="renewal-notes" placeholder="Ej. Número de operación o comprobante..." class="w-full bg-surface-container text-white px-3.5 py-2 rounded-xl border border-outline-variant text-xs focus:border-primary"/>
+        </div>
+
+        <!-- Enviar recibo digital por WhatsApp checkbox -->
+        <div class="flex items-center gap-2 pt-1">
+          <input type="checkbox" id="renewal-send-wa" checked class="w-4 h-4 accent-primary rounded"/>
+          <label for="renewal-send-wa" class="text-xs text-on-surface cursor-pointer select-none">
+            Generar recibo de renovación y preparar mensaje de WhatsApp
+          </label>
+        </div>
+
+        <!-- Botones de Acción Modal -->
+        <div class="flex items-center gap-2 pt-2 border-t border-outline-variant/30">
+          <button type="button" onclick="app.closeModal('modal-renewal')" class="w-1/3 py-2.5 px-3 rounded-xl bg-surface-container text-on-surface-variant font-headline font-semibold text-xs hover:bg-surface-bright transition-colors">
+            Cancelar
+          </button>
+          <button type="submit" id="btn-confirm-renewal" class="w-2/3 py-2.5 px-3 rounded-xl bg-primary text-on-primary font-headline font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/20 hover:brightness-110 active:scale-95 transition-all">
+            <span class="material-symbols-outlined text-[18px]">check_circle</span>
+            Confirmar Renovación
+          </button>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- MODAL: WHATSAPP (RECORDATORIO & AVISO / PROMOCIÓN) -->
+  <!-- ============================================================ -->
+  <div id="modal-whatsapp" class="fixed inset-0 z-50 hidden items-end sm:items-center justify-center p-0 sm:p-4 modal-backdrop">
+    <div class="w-full sm:max-w-md bg-surface-container-high rounded-t-2xl sm:rounded-2xl p-5 sm:p-6 shadow-2xl border border-outline-variant flex flex-col space-y-4 max-h-[90vh] overflow-y-auto">
+      
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-tertiary-container text-on-tertiary flex items-center justify-center">
+            <span class="material-symbols-outlined text-[20px]">chat</span>
+          </div>
+          <div>
+            <h3 class="font-headline font-bold text-base sm:text-lg text-white" id="wa-modal-title">Mensaje de WhatsApp</h3>
+            <p class="text-xs text-on-surface-variant flex items-center gap-1">
+              <span class="material-symbols-outlined text-[13px] text-tertiary">send</span>
+              <span id="wa-modal-phone">+51 987 654 321</span>
+            </p>
+          </div>
+        </div>
+        <button onclick="app.closeModal('modal-whatsapp')" class="w-8 h-8 rounded-lg bg-surface-container text-on-surface-variant hover:text-white flex items-center justify-center" type="button">
+          <span class="material-symbols-outlined text-[18px]">close</span>
+        </button>
+      </div>
+
+      <!-- Selector de plantilla rápida -->
+      <div class="space-y-1">
+        <label class="block text-[11px] uppercase font-bold text-on-surface-variant">Tipo de Mensaje</label>
+        <div class="grid grid-cols-2 gap-1.5">
+          <button type="button" id="wa-btn-tab-reminder" onclick="app.setWhatsAppMode('REMINDER')" class="py-1.5 px-2 rounded-lg bg-tertiary-container/30 text-tertiary border border-tertiary/40 font-headline text-xs font-semibold flex items-center justify-center gap-1">
+            <span class="material-symbols-outlined text-[15px]">notifications</span>
+            Recordatorio
+          </button>
+          <button type="button" id="wa-btn-tab-promo" onclick="app.setWhatsAppMode('PROMO')" class="py-1.5 px-2 rounded-lg bg-surface-container text-on-surface-variant border border-outline-variant/30 font-headline text-xs font-semibold flex items-center justify-center gap-1 hover:text-white">
+            <span class="material-symbols-outlined text-[15px]">local_offer</span>
+            Aviso / Promo
+          </button>
+        </div>
+      </div>
+
+      <!-- Textarea de Mensaje Listo para Enviar -->
+      <div class="space-y-1">
+        <div class="flex items-center justify-between">
+          <label class="block text-xs font-semibold text-on-surface-variant">Mensaje editable antes de enviar</label>
+          <button type="button" onclick="app.copyWhatsAppText()" class="text-[11px] text-primary hover:underline flex items-center gap-0.5">
+            <span class="material-symbols-outlined text-[13px]">content_copy</span>
+            Copiar texto
+          </button>
+        </div>
+        <textarea id="wa-message-text" rows="6" class="w-full bg-surface-container text-white p-3.5 rounded-xl border border-outline-variant text-xs sm:text-sm focus:border-tertiary leading-relaxed resize-none"></textarea>
+      </div>
+
+      <!-- Nota de claridad requerida por los requisitos -->
+      <div class="bg-surface-container-low p-2.5 rounded-xl border border-outline-variant/30 text-[11px] text-on-surface-variant flex items-start gap-2">
+        <span class="material-symbols-outlined text-[16px] text-primary shrink-0 mt-0.5">info</span>
+        <span>El botón abrirá el chat oficial en WhatsApp con el mensaje pre-cargado para que usted pueda revisarlo y enviarlo personalmente.</span>
+      </div>
+
+      <!-- Botones del Modal -->
+      <div class="flex items-center gap-2 pt-1 border-t border-outline-variant/30">
+        <button type="button" onclick="app.closeModal('modal-whatsapp')" class="w-1/3 py-2.5 px-3 rounded-xl bg-surface-container text-on-surface-variant font-headline font-semibold text-xs hover:bg-surface-bright transition-colors">
+          Cerrar
+        </button>
+        <button type="button" onclick="app.launchWhatsAppDirect()" class="w-2/3 py-2.5 px-3 rounded-xl bg-tertiary-container text-on-tertiary font-headline font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 shadow-md hover:opacity-95 active:scale-95 transition-all">
+          <span class="material-symbols-outlined text-[18px]">send</span>
+          Abrir en WhatsApp
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- MODAL: GOOGLE SHEETS SINCRONIZACIÓN & ENLACE -->
+  <!-- ============================================================ -->
+  <div id="modal-gsheets" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop">
+    <div class="w-full max-w-md bg-surface-container-high rounded-2xl p-5 sm:p-6 border border-emerald-500/40 shadow-2xl space-y-4">
+      
+      <div class="flex items-center justify-between pb-2 border-b border-outline-variant/30">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+            <span class="material-symbols-outlined text-[20px]">table_chart</span>
+          </div>
+          <div>
+            <h3 class="font-headline font-bold text-white text-base">Google Sheets Conectado</h3>
+            <p class="text-xs text-on-surface-variant">Sincronización bidireccional de datos</p>
+          </div>
+        </div>
+        <button onclick="app.closeModal('modal-gsheets')" class="w-8 h-8 rounded-lg bg-surface-container hover:bg-surface-bright text-on-surface flex items-center justify-center">
+          <span class="material-symbols-outlined text-[18px]">close</span>
+        </button>
+      </div>
+
+      <!-- Estado de la hoja conectada -->
+      <div class="bg-surface-container rounded-xl p-3.5 space-y-2 border border-outline-variant/30 text-xs">
+        <div class="flex items-center justify-between">
+          <span class="text-on-surface-variant">Documento:</span>
+          <span class="font-headline font-bold text-white">DarkMan - Control de Suscripciones</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-on-surface-variant">Hojas activas:</span>
+          <span class="font-medium text-emerald-400">Suscripciones, Historial</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-on-surface-variant">ID de Hoja:</span>
+          <span class="font-mono text-[11px] text-primary truncate max-w-[200px]" id="gsheet-id-display">1WS8iXX9TVqmrbMMF9QaQ16JzHEk_gyzdNbSm3p9QtzM</span>
+        </div>
+        <div class="flex items-center justify-between pt-1 border-t border-outline-variant/20">
+          <span class="text-on-surface-variant">Última Sincronización:</span>
+          <span class="font-bold text-white" id="gsheet-last-sync-display">Nunca sincronizado</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-on-surface-variant">Estado de Enlace:</span>
+          <span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" id="gsheet-status-pill">
+            Conectado & Sincronizado
+          </span>
+        </div>
+      </div>
+
+      <!-- Acciones de Sincronización -->
+      <div class="space-y-2 pt-1">
+        <button type="button" onclick="app.syncGoogleSheetsNow()" id="btn-sync-gsheet" class="w-full py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-headline font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 active:scale-95 transition-all">
+          <span class="material-symbols-outlined text-[18px]">sync</span>
+          Exportar y Sincronizar con Google Sheets
+        </button>
+
+        <a id="btn-open-gsheet" href="https://docs.google.com/spreadsheets/d/1WS8iXX9TVqmrbMMF9QaQ16JzHEk_gyzdNbSm3p9QtzM/edit" target="_blank" class="w-full py-2.5 px-3 rounded-xl bg-surface-container hover:bg-surface-bright text-white font-headline font-semibold text-xs flex items-center justify-center gap-2 border border-outline-variant transition-colors">
+          <span class="material-symbols-outlined text-[18px] text-emerald-400">open_in_new</span>
+          Abrir Hoja de Cálculo en Google Drive
+        </a>
+
+        <button type="button" onclick="app.importGoogleSheetsNow()" id="btn-import-gsheet" class="w-full py-2 px-3 rounded-xl bg-surface-container-low hover:bg-surface-bright text-on-surface-variant hover:text-white font-headline text-xs flex items-center justify-center gap-1.5 transition-colors">
+          <span class="material-symbols-outlined text-[16px]">download</span>
+          Importar clientes desde Google Sheets a DarkMan
+        </button>
+      </div>
+
+      <!-- Configuración de ID opcional -->
+      <details class="text-xs text-on-surface-variant pt-1 border-t border-outline-variant/30">
+        <summary class="cursor-pointer hover:text-white">Conectar otra hoja por ID o URL</summary>
+        <div class="mt-2 space-y-2">
+          <input type="text" id="custom-gsheet-id" placeholder="Pegue el ID o enlace de su Google Sheet..." class="w-full bg-surface-container text-white px-3 py-2 rounded-lg border border-outline-variant text-xs focus:border-primary"/>
+          <button type="button" onclick="app.changeConnectedSpreadsheet()" class="px-3 py-1.5 rounded-lg bg-primary-container text-on-primary-container font-headline font-bold text-xs">
+            Vincular Hoja
+          </button>
+        </div>
+      </details>
+
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- MODAL: CONFIRMACIÓN DE ACCIONES DESTRUCTIVAS -->
+  <!-- ============================================================ -->
+  <div id="modal-confirm" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop">
+    <div class="w-full max-w-sm bg-surface-container-high rounded-2xl p-5 border border-error/40 shadow-2xl space-y-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-error/20 text-error flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-[24px]">warning</span>
+        </div>
+        <div>
+          <h3 class="font-headline font-bold text-base text-white" id="confirm-title">¿Confirmar acción?</h3>
+          <p class="text-xs text-on-surface-variant" id="confirm-message">Esta acción no se puede deshacer.</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 pt-2 border-t border-outline-variant/30">
+        <button type="button" onclick="app.closeModal('modal-confirm')" class="w-1/2 py-2 px-3 rounded-xl bg-surface-container text-on-surface-variant font-headline font-semibold text-xs hover:bg-surface-bright transition-colors">
+          Cancelar
+        </button>
+        <button type="button" id="confirm-action-btn" class="w-1/2 py-2 px-3 rounded-xl bg-error text-on-error font-headline font-bold text-xs flex items-center justify-center gap-1 hover:brightness-110 active:scale-95 transition-all">
+          Confirmar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- MODAL: INICIO DE SESIÓN / ACCESO SEGURO -->
+  <!-- ============================================================ -->
+  <div id="modal-auth" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop">
+    <div class="w-full max-w-sm bg-surface-container-high rounded-2xl p-6 border border-primary/40 shadow-2xl space-y-5">
+      <div class="text-center space-y-2">
+        <div class="w-14 h-14 mx-auto rounded-2xl bg-surface-container border border-outline-variant flex items-center justify-center shadow-inner">
+          <img src="/assets/logo.svg" alt="DarkMan Logo" class="w-9 h-9 object-contain"/>
+        </div>
+        <h3 class="font-headline font-bold text-lg text-white">Acceso Administrativo</h3>
+        <p class="text-xs text-on-surface-variant">Ingrese la contraseña maestra para desbloquear el panel y gestionar clientes.</p>
+      </div>
+
+      <form onsubmit="event.preventDefault(); app.submitLogin();" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-on-surface-variant mb-1">Contraseña de Administrador</label>
+          <div class="relative">
+            <input type="password" id="auth-password" required placeholder="••••••••" class="w-full bg-surface-container text-white px-3.5 py-2.5 rounded-xl border border-outline-variant text-sm focus:border-primary"/>
+            <button type="button" onclick="app.togglePasswordVisibility('auth-password')" class="absolute right-3 top-2.5 text-on-surface-variant hover:text-white">
+              <span class="material-symbols-outlined text-[18px]">visibility</span>
+            </button>
+          </div>
+          <span id="auth-error-msg" class="hidden text-xs text-error font-semibold mt-1 block"></span>
+        </div>
+
+        <button type="submit" id="btn-submit-auth" class="w-full py-2.5 px-4 rounded-xl bg-primary text-on-primary font-headline font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 shadow-lg shadow-blue-500/20 hover:brightness-110 active:scale-95 transition-all">
+          <span class="material-symbols-outlined text-[18px]">lock_open</span>
+          Desbloquear Acceso
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- CONTENEDOR FLOTANTE DE NOTIFICACIONES TOAST -->
+  <!-- ============================================================ -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none px-4 sm:px-0"></div>
+
+  <!-- Scripts de la Aplicación -->
+  <script src="/app.js"></script>
+</body>
+</html>

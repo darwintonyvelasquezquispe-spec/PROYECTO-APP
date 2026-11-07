@@ -1,0 +1,107 @@
+/* DarkMan - Obsidian Command Custom Stylesheet */
+
+:root {
+  --canvas-base: #0F1115;
+  --surface-1: #171A21;
+  --surface-2: #1E222D;
+  --surface-3: #262C3A;
+  --border-hairline: #2D3343;
+  --primary-accent: #3B82F6;
+  --status-vigente: #10B981;
+  --status-por-vencer: #F59E0B;
+  --status-vencido: #EF4444;
+  --whatsapp: #22C55E;
+}
+
+/* Tabular numbers for clean financial alignment */
+.tabular-nums, .num-font {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* Custom Obsidian Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #10131a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #272a31;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3b82f6;
+}
+
+/* Card anchor borders for status */
+.card-anchor-vigente {
+  border-left: 3.5px solid #10B981 !important;
+}
+
+.card-anchor-por-vencer {
+  border-left: 3.5px solid #F59E0B !important;
+}
+
+.card-anchor-vencido {
+  border-left: 3.5px solid #EF4444 !important;
+}
+
+/* Pulse animation for today's expirations */
+@keyframes urgent-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(1.2);
+  }
+}
+
+.pulse-urgent {
+  animation: urgent-pulse 1.8s infinite ease-in-out;
+}
+
+/* Modal Backdrop Blur */
+.modal-backdrop {
+  background-color: rgba(11, 14, 21, 0.82);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Toast animations */
+@keyframes toast-in {
+  from {
+    transform: translateY(100%) scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.toast-enter {
+  animation: toast-in 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* High density table styles */
+.dense-table th {
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.dense-table tr:hover td {
+  background-color: rgba(38, 44, 58, 0.45);
+}
+
+/* Focus outline glow */
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.35);
+}
